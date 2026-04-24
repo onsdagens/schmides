@@ -1,5 +1,3 @@
-use std::sync::mpsc::{self, Receiver, Sender};
-
 use eframe::egui;
 
 fn main() -> eframe::Result {
@@ -15,22 +13,18 @@ fn main() -> eframe::Result {
 }
 
 struct SlideViewer {
-    page_counter: usize,
-    channel: (Sender<egui::Key>, Receiver<egui::Key>),
+    page_counter: u32,
 }
 
 impl Default for SlideViewer {
     fn default() -> Self {
-        SlideViewer {
-            page_counter: 0,
-            channel: mpsc::channel(),
-        }
+        SlideViewer { page_counter: 0 }
     }
 }
 
 impl eframe::App for SlideViewer {
     fn ui(&mut self, ui: &mut egui::Ui, _: &mut eframe::Frame) {
-        let tx = self.channel.0.clone();
+        let mut delta: i64 = 0;
         egui::CentralPanel::default().show_inside(ui, |ui| {
             ui.heading("Notes");
             ui.label("This is the main view.");
@@ -38,14 +32,13 @@ impl eframe::App for SlideViewer {
             ui.label(format!("{}", self.page_counter));
             ui.ctx().input(|i| {
                 if i.key_released(egui::Key::ArrowLeft) {
-                    let _ = tx.send(egui::Key::ArrowLeft);
+                    delta -= 1;
                 }
                 if i.key_released(egui::Key::ArrowRight) {
-                    let _ = tx.send(egui::Key::ArrowRight);
+                    delta += 1;
                 }
             });
         });
-        let counter_clone = self.page_counter.clone();
         // The content of both windows is coupled (by the page no.)
         //  so it makes sense for this to be immediate
         ui.ctx().show_viewport_immediate(
@@ -53,35 +46,22 @@ impl eframe::App for SlideViewer {
             egui::ViewportBuilder::default()
                 .with_title("Slides")
                 .with_inner_size([200.0, 100.0]),
-            move |ui, _| {
+            |ui, _| {
                 egui::CentralPanel::default().show_inside(ui, |ui| {
                     ui.label("This is a child viewport.");
                     ui.label("You can decrease the same counter from this window as well");
-                    ui.label(format!("Page: {}", counter_clone));
+                    ui.label(format!("Page: {}", self.page_counter));
                     ui.ctx().input(|i| {
                         if i.key_released(egui::Key::ArrowLeft) {
-                            let _ = tx.send(egui::Key::ArrowLeft);
+                            delta -= 1;
                         }
                         if i.key_released(egui::Key::ArrowRight) {
-                            let _ = tx.send(egui::Key::ArrowRight);
+                            delta += 1;
                         }
                     });
                 });
             },
         );
-
-        while let Ok(v) = self.channel.1.try_recv() {
-            match v {
-                egui::Key::ArrowLeft => {
-                    self.page_counter -= 1;
-                }
-                egui::Key::ArrowRight => {
-                    self.page_counter += 1;
-                }
-                _ => {
-                    unreachable!();
-                }
-            }
-        }
+        self.page_counter = (self.page_counter as i64 + delta).clamp(0, i64::MAX) as u32;
     }
 }
