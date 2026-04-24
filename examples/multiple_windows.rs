@@ -10,7 +10,7 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Reader",
         options,
-        Box::new(|cc| Ok(Box::<SlideViewer>::default())),
+        Box::new(|_| Ok(Box::<SlideViewer>::default())),
     )
 }
 
@@ -29,11 +29,12 @@ impl Default for SlideViewer {
 }
 
 impl eframe::App for SlideViewer {
-    fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _: &mut eframe::Frame) {
         let tx = self.channel.0.clone();
         egui::CentralPanel::default().show_inside(ui, |ui| {
-            ui.heading("Slide Viewer");
-            ui.label("Hello World!");
+            ui.heading("Notes");
+            ui.label("This is the main view.");
+            ui.label("Press the left/right arrows to decrease/increase the counter");
             ui.label(format!("{}", self.page_counter));
             ui.ctx().input(|i| {
                 if i.key_released(egui::Key::ArrowLeft) {
@@ -48,14 +49,14 @@ impl eframe::App for SlideViewer {
         // The content of both windows is coupled (by the page no.)
         //  so it makes sense for this to be immediate
         ui.ctx().show_viewport_immediate(
-            egui::ViewportId::from_hash_of("deferred_viewport"),
+            egui::ViewportId::from_hash_of("slides"),
             egui::ViewportBuilder::default()
-                .with_title("Deferred Viewport")
+                .with_title("Slides")
                 .with_inner_size([200.0, 100.0]),
             move |ui, _| {
                 egui::CentralPanel::default().show_inside(ui, |ui| {
-                    ui.heading("Deferred Window");
-                    ui.label("Hello! :D");
+                    ui.label("This is a child viewport.");
+                    ui.label("You can decrease the same counter from this window as well");
                     ui.label(format!("Page: {}", counter_clone));
                     ui.ctx().input(|i| {
                         if i.key_released(egui::Key::ArrowLeft) {
