@@ -6,5 +6,5 @@ edition = "2024"
 [dependencies]
 eframe = {git = "https://github.com/onsdagens/egui.git"}
 egui = {git = "https://github.com/onsdagens/egui.git"}
-egui_extras = {git = "https://github.com/onsdagens/egui.git", features=["svg", "svg_text", "all_loaders"]}
+egui_extras = {git = "https://github.com/onsdagens/egui.git", features=["svg", "svg_text","svg_images", "all_loaders"]}
 rfd = "0.17.2"

@@ -21,7 +21,6 @@ struct RenderSvg {
     path: Option<PathBuf>,
 }
 
-// TODO: This is a horrible idea, remove this
 impl Default for RenderSvg {
     fn default() -> Self {
         RenderSvg { path: None }
