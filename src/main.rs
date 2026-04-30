@@ -59,7 +59,7 @@ impl eframe::App for SlideViewer {
                 ui.label("This will in the future be the presenter notes view.");
                 ui.label("Press the left/right arrows to move around the slides");
                 if ui.button("Open directory").clicked() {
-                    self.open_slides();
+                    self.open_slides(ui);
                 }
                 if ui.button("Open Typst file with notes").clicked() {
                     if let Some(path) = rfd::FileDialog::new().pick_file() {
@@ -102,7 +102,6 @@ impl eframe::App for SlideViewer {
         });
         // The content of both windows is coupled (by the page no.)
         //  so it makes sense for this to be immediate
-        //let vb = if self.slides_full_screen
         if self.show_slides_window {
             self.show_slides_window(ui, &mut delta);
         }
@@ -112,7 +111,7 @@ impl eframe::App for SlideViewer {
 }
 
 impl SlideViewer {
-    fn open_slides(&mut self) {
+    fn open_slides(&mut self, ui: &mut Ui) {
         self.path = rfd::FileDialog::new().pick_folder();
         if let Some(path) = &self.path {
             // Is this fallible?
@@ -134,6 +133,12 @@ impl SlideViewer {
                         todo!("Directory containes files that are not .svg");
                     }
                     if let Ok(index) = name_ext[0].parse::<u32>() {
+                        // This is a valid slide file, preload it
+                        ui.try_load_image(
+                            &format!("file://{}", p.path().as_os_str().to_string_lossy()),
+                            egui::SizeHint::Scale(egui::emath::OrderedFloat(2.0)),
+                        )
+                        .ok();
                         self.first_slide = self.first_slide.min(index);
                         self.last_slide = self.last_slide.max(index);
                     } else {
