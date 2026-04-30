@@ -102,7 +102,9 @@ impl eframe::App for SlideViewer {
                 }
             });
             if let Some(note) = self.notes.get_mut((self.page_counter as i32 + self.notes_offset) as usize ){
-                ui.text_edit_multiline(note);
+                egui::ScrollArea::vertical().show(ui, |ui| {     
+                    ui.text_edit_multiline(note);
+                });
             }
             ui.ctx().input(|i| {
                 if i.key_released(egui::Key::ArrowLeft) {
@@ -135,6 +137,8 @@ impl SlideViewer {
                 .with_title("Slides")
                 .with_min_inner_size([100.0, 100.0])
                 .with_resizable(true)
+                .with_decorations(false)
+                .with_movable_by_background(true)
         };
         ui.ctx().show_viewport_immediate(
             egui::ViewportId::from_hash_of("slides"),
