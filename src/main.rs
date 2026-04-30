@@ -66,6 +66,12 @@ impl eframe::App for SlideViewer {
                         self.parse_notes(path);
                     }
                 }
+                if ui.button("Hide UI (H)").clicked() {
+                    self.show_notes_ui = false;
+                }
+                if ui.button("Hide Slides Window Decorations(D)").clicked() {
+                    self.slides_show_top = false;
+                }
                 ui.horizontal(|ui| {
                     ui.label(format!("Page: {}", self.page_counter));
                     ui.label(format!("Notes offset: {}", -self.notes_offset));
@@ -74,12 +80,6 @@ impl eframe::App for SlideViewer {
                     }
                     if ui.button("-").clicked() {
                         self.notes_offset += 1;
-                    }
-                    if ui.button("Hide UI (H)").clicked() {
-                        self.show_notes_ui = false;
-                    }
-                    if ui.button("Hide Slides Window Decorations(D)").clicked() {
-                        self.slides_show_top = false;
                     }
                 });
             }
@@ -205,6 +205,12 @@ impl SlideViewer {
                         }
                         if i.key_released(egui::Key::ArrowRight) {
                             *delta += 1;
+                        }
+                        if i.key_released(egui::Key::H) {
+                            self.show_notes_ui = !self.show_notes_ui;
+                        }
+                        if i.key_released(egui::Key::D) {
+                            self.slides_show_top = !self.slides_show_top;
                         }
                     });
                 });
