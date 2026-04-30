@@ -9,7 +9,6 @@
     date: "1.12.2025",
   ),
 )
-
 = Correctness under Real-Time Systems
 #set text(size: 18pt)
 #ltu-slide[
