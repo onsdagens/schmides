@@ -12,6 +12,7 @@ An example Typst project is provided under `./lecture_7`.
 
 It can be rendered with properly formatted output by
 ```
+cd slides && mkdir build
 typst compile example.typ --format svg ./build/{p}.svg
 ```
 
