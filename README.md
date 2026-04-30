@@ -31,6 +31,6 @@ The `./slides/example.typ` example contains some notes for the provided demo sli
 
 
 ## Eventual goals
-  [x] Viewing `#speaker-note[...]` in the speaker note view
-  [] Parsing speaker notes is currently a hack, maybe use `typst-lib`?
-  [x] Making it less shaky at least on MacOS
+  - [x] Viewing `#speaker-note[...]` in the speaker note view
+  - [ ] Parsing speaker notes is currently a hack, maybe use `typst-lib`?
+  - [x] Making it less shaky at least on MacOS
