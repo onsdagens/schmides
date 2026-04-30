@@ -8,7 +8,7 @@ use std::{
 
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
+        viewport: egui::ViewportBuilder::default().with_inner_size([300.0, 500.0]),
         ..Default::default()
     };
     eframe::run_native(
@@ -26,7 +26,7 @@ struct SlideViewer {
     last_slide: u32,
     page_counter: u32,
     path: Option<PathBuf>,
-    slides_full_screen: bool,
+    slides_show_top: bool,
     show_slides_window: bool,
     notes: Vec<String>,
     notes_offset: i32,
@@ -40,7 +40,7 @@ impl Default for SlideViewer {
             last_slide: 1,
             page_counter: 1,
             path: None,
-            slides_full_screen: false,
+            slides_show_top: true,
             show_slides_window: true,
             notes: vec![],
             // The slides are one-indexed
@@ -51,15 +51,15 @@ impl Default for SlideViewer {
 }
 
 impl eframe::App for SlideViewer {
-    fn ui(&mut self, ui: &mut egui::Ui, _: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &eframe::egui::Context, _: &mut eframe::Frame) {
         let mut delta: i64 = 0;
-        egui::CentralPanel::default().show_inside(ui, |ui| {
+        egui::CentralPanel::default().show(ctx, |ui| {
             if self.show_notes_ui {
                 ui.heading("Notes");
                 ui.label("This will in the future be the presenter notes view.");
                 ui.label("Press the left/right arrows to move around the slides");
                 if ui.button("Open directory").clicked() {
-                    self.open_slides(ui);
+                    self.open_slides(ctx);
                 }
                 if ui.button("Open Typst file with notes").clicked() {
                     if let Some(path) = rfd::FileDialog::new().pick_file() {
@@ -77,6 +77,9 @@ impl eframe::App for SlideViewer {
                     }
                     if ui.button("Hide UI (H)").clicked() {
                         self.show_notes_ui = false;
+                    }
+                    if ui.button("Hide Slides Window Decorations(D)").clicked() {
+                        self.slides_show_top = false;
                     }
                 });
             }
@@ -98,12 +101,15 @@ impl eframe::App for SlideViewer {
                 if i.key_released(egui::Key::H) {
                     self.show_notes_ui = !self.show_notes_ui;
                 }
+                if i.key_released(egui::Key::D) {
+                    self.slides_show_top = !self.slides_show_top;
+                }
             });
         });
         // The content of both windows is coupled (by the page no.)
         //  so it makes sense for this to be immediate
         if self.show_slides_window {
-            self.show_slides_window(ui, &mut delta);
+            self.show_slides_window(ctx, &mut delta);
         }
         self.page_counter =
             ((self.page_counter as i64 + delta) as u32).clamp(self.first_slide, self.last_slide);
@@ -111,7 +117,7 @@ impl eframe::App for SlideViewer {
 }
 
 impl SlideViewer {
-    fn open_slides(&mut self, ui: &mut Ui) {
+    fn open_slides(&mut self, ctx: &eframe::egui::Context) {
         self.path = rfd::FileDialog::new().pick_folder();
         if let Some(path) = &self.path {
             // Is this fallible?
@@ -134,9 +140,10 @@ impl SlideViewer {
                     }
                     if let Ok(index) = name_ext[0].parse::<u32>() {
                         // This is a valid slide file, preload it
-                        ui.try_load_image(
+
+                        ctx.try_load_image(
                             &format!("file://{}", p.path().as_os_str().to_string_lossy()),
-                            egui::SizeHint::Scale(egui::emath::OrderedFloat(2.0)),
+                            egui::SizeHint::Scale(egui::emath::OrderedFloat(5.0)),
                         )
                         .ok();
                         self.first_slide = self.first_slide.min(index);
@@ -149,24 +156,25 @@ impl SlideViewer {
             }
         }
     }
-    fn show_slides_window(&mut self, ui: &mut Ui, delta: &mut i64) {
-        let builder = if self.slides_full_screen {
+    fn show_slides_window(&mut self, ctx: &eframe::egui::Context, delta: &mut i64) {
+        let builder = if self.slides_show_top {
             egui::ViewportBuilder::default()
                 .with_title("Slides")
-                .with_fullscreen(true)
+                .with_min_inner_size([500.0, 400.0])
+                .with_resizable(true)
+                .with_decorations(true)
         } else {
             egui::ViewportBuilder::default()
                 .with_title("Slides")
-                .with_min_inner_size([100.0, 100.0])
+                .with_min_inner_size([500.0, 400.0])
                 .with_resizable(true)
                 .with_decorations(false)
-                .with_movable_by_background(true)
         };
-        ui.ctx().show_viewport_immediate(
+        ctx.show_viewport_immediate(
             egui::ViewportId::from_hash_of("slides"),
             builder,
-            |ui, _| {
-                egui::CentralPanel::default().show_inside(ui, |ui| {
+            |ctx, _| {
+                egui::CentralPanel::default().show(ctx, |ui| {
                     if let Some(path) = &self.path {
                         // The string gymnastics seem stupid, there has to be a better way
                         // We can also cache the image on open,
@@ -180,20 +188,6 @@ impl SlideViewer {
                     ui.ctx().input(|i| {
                         if i.viewport().close_requested() {
                             self.show_slides_window = false;
-                        }
-                        if let Some(b) = i.viewport().fullscreen {
-                            if b {
-                                self.slides_full_screen = true;
-                            } else {
-                                self.slides_full_screen = false;
-                            }
-                        }
-                        if let Some(b) = i.viewport().maximized {
-                            if b {
-                                self.slides_full_screen = true;
-                            } else {
-                                self.slides_full_screen = false;
-                            }
                         }
                         if i.key_released(egui::Key::ArrowLeft) {
                             *delta -= 1;
