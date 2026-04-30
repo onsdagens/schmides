@@ -88,7 +88,7 @@ impl eframe::App for SlideViewer {
                 .get_mut((self.page_counter as i32 + self.notes_offset) as usize)
             {
                 egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.text_edit_multiline(note);
+                    egui::TextEdit::multiline(note).interactive(false).show(ui);
                 });
             }
             ui.ctx().input(|i| {
@@ -177,10 +177,17 @@ impl SlideViewer {
             |ctx, _| {
                 egui::CentralPanel::default().show(ctx, |ui| {
                     if let Some(path) = &self.path {
-                        // The string gymnastics seem stupid, there has to be a better way
-                        // We can also cache the image on open,
-                        //  i believe egui does this automagically
-                        // Hopefully now this should be rasterized in a better than bad resolution
+                        // Another attempt at prerasterizing the SVGs
+                        // Note, these should be cached by egui, so this
+                        // isn't as bad as it looks
+                        for s in self.first_slide..=self.last_slide {
+                            let i = egui::Image::new(format!(
+                                "file://{}/{}.svg",
+                                path.to_string_lossy(),
+                                s
+                            ));
+                            i.load_for_size(ctx, Vec2::new(3840.0, 2160.0)).ok();
+                        }
                         let i = egui::Image::new(format!(
                             "file://{}/{}.svg",
                             path.to_string_lossy(),
