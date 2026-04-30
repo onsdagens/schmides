@@ -30,6 +30,7 @@ struct SlideViewer {
     show_slides_window: bool,
     notes: Vec<String>,
     notes_offset: i32,
+    show_notes_ui: bool,
 }
 
 impl Default for SlideViewer {
@@ -44,6 +45,7 @@ impl Default for SlideViewer {
             notes: vec![],
             // The slides are one-indexed
             notes_offset: -1,
+            show_notes_ui: true,
         }
     }
 }
@@ -52,57 +54,37 @@ impl eframe::App for SlideViewer {
     fn ui(&mut self, ui: &mut egui::Ui, _: &mut eframe::Frame) {
         let mut delta: i64 = 0;
         egui::CentralPanel::default().show_inside(ui, |ui| {
-            ui.heading("Notes");
-            ui.label("This will in the future be the presenter notes view.");
-            ui.label("Press the left/right arrows to move around the slides");
-            if ui.button("Open directory").clicked() {
-                self.path = rfd::FileDialog::new().pick_folder();
-                if let Some(path) = &self.path {
-                    // Is this fallible?
-                    for f in fs::read_dir(path).unwrap() {
-                        if let Ok(p) = f {
-                            let name = p.file_name();
-                            let name_str = name.to_string_lossy();
-                            println!("{}", name_str);
-                            let name_ext: Vec<&str> = name_str.split('.').collect();
-                            // We expect a file name and an extension, loose periods in the name are disallowed for now
-                            if name_ext.len() != 2 {
-                                todo!("Directory contains files with multiple periods in name, or no extension");
-                            }
-                            if name_ext[1] != "svg" {
-                                // Really we could just ignore files that are not svgs
-                                // but for now let's be "proper"
-                                todo!("Directory containes files that are not .svg");
-                            }
-                            if let Ok(index) = name_ext[0].parse::<u32>() {
-                                self.first_slide = self.first_slide.min(index);
-                                self.last_slide = self.last_slide.max(index);
-                            } else {
-                                // Same again, we could just ignore these
-                                todo!("Directory contains filenames not on the form <page no.>.svg");
-                            }
-                        }
+            if self.show_notes_ui {
+                ui.heading("Notes");
+                ui.label("This will in the future be the presenter notes view.");
+                ui.label("Press the left/right arrows to move around the slides");
+                if ui.button("Open directory").clicked() {
+                    self.open_slides();
+                }
+                if ui.button("Open Typst file with notes").clicked() {
+                    if let Some(path) = rfd::FileDialog::new().pick_file() {
+                        self.parse_notes(path);
                     }
                 }
+                ui.horizontal(|ui| {
+                    ui.label(format!("Page: {}", self.page_counter));
+                    ui.label(format!("Notes offset: {}", -self.notes_offset));
+                    if ui.button("+").clicked() {
+                        self.notes_offset -= 1;
+                    }
+                    if ui.button("-").clicked() {
+                        self.notes_offset += 1;
+                    }
+                    if ui.button("Hide UI (H)").clicked() {
+                        self.show_notes_ui = false;
+                    }
+                });
             }
-            if ui.button("Open Typst file with notes").clicked() {
-                if let Some(path) = rfd::FileDialog::new().pick_file() {
-                    self.parse_notes(path);
-                }
-            }
-            ui.horizontal(|ui|{
-                
-                ui.label(format!("Page: {}", self.page_counter));
-                ui.label(format!("Notes offset: {}", -self.notes_offset));
-                if ui.button("+").clicked() {
-                    self.notes_offset -= 1;
-                }
-                if ui.button("-").clicked() {
-                    self.notes_offset += 1;
-                }
-            });
-            if let Some(note) = self.notes.get_mut((self.page_counter as i32 + self.notes_offset) as usize ){
-                egui::ScrollArea::vertical().show(ui, |ui| {     
+            if let Some(note) = self
+                .notes
+                .get_mut((self.page_counter as i32 + self.notes_offset) as usize)
+            {
+                egui::ScrollArea::vertical().show(ui, |ui| {
                     ui.text_edit_multiline(note);
                 });
             }
@@ -112,6 +94,9 @@ impl eframe::App for SlideViewer {
                 }
                 if i.key_released(egui::Key::ArrowRight) {
                     delta += 1;
+                }
+                if i.key_released(egui::Key::H) {
+                    self.show_notes_ui = !self.show_notes_ui;
                 }
             });
         });
@@ -127,6 +112,38 @@ impl eframe::App for SlideViewer {
 }
 
 impl SlideViewer {
+    fn open_slides(&mut self) {
+        self.path = rfd::FileDialog::new().pick_folder();
+        if let Some(path) = &self.path {
+            // Is this fallible?
+            for f in fs::read_dir(path).unwrap() {
+                if let Ok(p) = f {
+                    let name = p.file_name();
+                    let name_str = name.to_string_lossy();
+                    println!("{}", name_str);
+                    let name_ext: Vec<&str> = name_str.split('.').collect();
+                    // We expect a file name and an extension, loose periods in the name are disallowed for now
+                    if name_ext.len() != 2 {
+                        todo!(
+                            "Directory contains files with multiple periods in name, or no extension"
+                        );
+                    }
+                    if name_ext[1] != "svg" {
+                        // Really we could just ignore files that are not svgs
+                        // but for now let's be "proper"
+                        todo!("Directory containes files that are not .svg");
+                    }
+                    if let Ok(index) = name_ext[0].parse::<u32>() {
+                        self.first_slide = self.first_slide.min(index);
+                        self.last_slide = self.last_slide.max(index);
+                    } else {
+                        // Same again, we could just ignore these
+                        todo!("Directory contains filenames not on the form <page no.>.svg");
+                    }
+                }
+            }
+        }
+    }
     fn show_slides_window(&mut self, ui: &mut Ui, delta: &mut i64) {
         let builder = if self.slides_full_screen {
             egui::ViewportBuilder::default()
