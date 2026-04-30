@@ -24,6 +24,7 @@
 ]
 = Funkiest slide i could find
 #ltu-slide[
+  #set text(size:18pt)
   #box(width: 10fr)[
     #table(
       columns: (auto, auto, auto, auto, auto, auto, auto),
