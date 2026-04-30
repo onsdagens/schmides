@@ -1,5 +1,5 @@
 use eframe::egui;
-use egui::Ui;
+use egui::{SizeHint, Ui, Vec2};
 use std::{
     fs::{self, File},
     io::Read,
@@ -140,10 +140,11 @@ impl SlideViewer {
                     }
                     if let Ok(index) = name_ext[0].parse::<u32>() {
                         // This is a valid slide file, preload it
-
+                        // Actually this doesn't seem to do much but let's keep it here
                         ctx.try_load_image(
-                            &format!("file://{}", p.path().as_os_str().to_string_lossy()),
-                            egui::SizeHint::Scale(egui::emath::OrderedFloat(5.0)),
+                            &format!("file://{}", p.path().to_string_lossy()),
+                            // Rasterize the SVG to 4k(??), should be good enough
+                            egui::SizeHint::Width(3840),
                         )
                         .ok();
                         self.first_slide = self.first_slide.min(index);
@@ -179,13 +180,16 @@ impl SlideViewer {
                         // The string gymnastics seem stupid, there has to be a better way
                         // We can also cache the image on open,
                         //  i believe egui does this automagically
-                        ui.image(format!(
+                        // Hopefully now this should be rasterized in a better than bad resolution
+                        let i = egui::Image::new(format!(
                             "file://{}/{}.svg",
-                            path.as_path().as_os_str().to_string_lossy(),
+                            path.to_string_lossy(),
                             self.page_counter
                         ));
+                        i.load_for_size(ctx, Vec2::new(3840.0, 2160.0)).unwrap();
+                        ui.add(i);
                     }
-                    ui.ctx().input(|i| {
+                    ctx.input(|i| {
                         if i.viewport().close_requested() {
                             self.show_slides_window = false;
                         }
