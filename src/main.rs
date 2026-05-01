@@ -192,7 +192,7 @@ impl SlideViewer {
                             self.page_counter
                         ));
                         i.load_for_size(ctx, Vec2::new(3840.0, 2160.0)).unwrap();
-                        ui.add(i);
+                        ui.centered_and_justified(|ui| ui.add(i));
                     }
                     ctx.input(|i| {
                         if i.viewport().close_requested() {
