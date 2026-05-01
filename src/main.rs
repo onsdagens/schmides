@@ -61,10 +61,10 @@ impl eframe::App for SlideViewer {
                 if ui.button("Open directory").clicked() {
                     self.open_slides(ctx);
                 }
-                if ui.button("Open Typst file with notes").clicked() {
-                    if let Some(path) = rfd::FileDialog::new().pick_file() {
-                        self.parse_notes(path);
-                    }
+                if ui.button("Open Typst file with notes").clicked()
+                    && let Some(path) = rfd::FileDialog::new().pick_file()
+                {
+                    self.parse_notes(path);
                 }
                 if ui.button("Hide UI (H)").clicked() {
                     self.show_notes_ui = false;
@@ -121,38 +121,36 @@ impl SlideViewer {
         self.path = rfd::FileDialog::new().pick_folder();
         if let Some(path) = &self.path {
             // Is this fallible?
-            for f in fs::read_dir(path).unwrap() {
-                if let Ok(p) = f {
-                    let name = p.file_name();
-                    let name_str = name.to_string_lossy();
-                    println!("{}", name_str);
-                    let name_ext: Vec<&str> = name_str.split('.').collect();
-                    // We expect a file name and an extension, loose periods in the name are disallowed for now
-                    if name_ext.len() != 2 {
-                        todo!(
-                            "Directory contains files with multiple periods in name, or no extension"
-                        );
-                    }
-                    if name_ext[1] != "svg" {
-                        // Really we could just ignore files that are not svgs
-                        // but for now let's be "proper"
-                        todo!("Directory containes files that are not .svg");
-                    }
-                    if let Ok(index) = name_ext[0].parse::<u32>() {
-                        // This is a valid slide file, preload it
-                        // Actually this doesn't seem to do much but let's keep it here
-                        ctx.try_load_image(
-                            &format!("file://{}", p.path().to_string_lossy()),
-                            // Rasterize the SVG to 4k(??), should be good enough
-                            egui::SizeHint::Width(3840),
-                        )
-                        .ok();
-                        self.first_slide = self.first_slide.min(index);
-                        self.last_slide = self.last_slide.max(index);
-                    } else {
-                        // Same again, we could just ignore these
-                        todo!("Directory contains filenames not on the form <page no.>.svg");
-                    }
+            for p in fs::read_dir(path).unwrap().flatten() {
+                let name = p.file_name();
+                let name_str = name.to_string_lossy();
+                println!("{}", name_str);
+                let name_ext: Vec<&str> = name_str.split('.').collect();
+                // We expect a file name and an extension, loose periods in the name are disallowed for now
+                if name_ext.len() != 2 {
+                    todo!(
+                        "Directory contains files with multiple periods in name, or no extension"
+                    );
+                }
+                if name_ext[1] != "svg" {
+                    // Really we could just ignore files that are not svgs
+                    // but for now let's be "proper"
+                    todo!("Directory containes files that are not .svg");
+                }
+                if let Ok(index) = name_ext[0].parse::<u32>() {
+                    // This is a valid slide file, preload it
+                    // Actually this doesn't seem to do much but let's keep it here
+                    ctx.try_load_image(
+                        &format!("file://{}", p.path().to_string_lossy()),
+                        // Rasterize the SVG to 4k(??), should be good enough
+                        egui::SizeHint::Width(3840),
+                    )
+                    .ok();
+                    self.first_slide = self.first_slide.min(index);
+                    self.last_slide = self.last_slide.max(index);
+                } else {
+                    // Same again, we could just ignore these
+                    todo!("Directory contains filenames not on the form <page no.>.svg");
                 }
             }
         }
