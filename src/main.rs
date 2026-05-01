@@ -1,5 +1,5 @@
 use eframe::egui;
-use egui::{SizeHint, Ui, Vec2};
+use egui::Vec2;
 use std::{
     fs::{self, File},
     io::Read,
