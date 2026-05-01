@@ -14,19 +14,19 @@
   - This is a pretty benign slide
   - Just some bullet points
     - We can also do subbullets
-]
 #speaker-note[
   Here are some notes for our noble speaker
+]
 ]
 = Pretty funky slide
 #ltu-slide[
   - The two column layout and inlined raster image make this one a bit more challenging
   - For sure no match for Typst
-][
-#image("img/deadlock.png")
-]
 #speaker-note[
   If the speaker wishes to speak they may use these notes to keep track of their thinking
+]
+][
+#image("img/deadlock.png")
 ]
 = Funkiest slide i could find
 #ltu-slide[

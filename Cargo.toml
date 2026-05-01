@@ -8,6 +8,7 @@ eframe = {git = "https://github.com/onsdagens/egui.git", branch = "patch-0.31.1-
 egui = {git = "https://github.com/onsdagens/egui.git", branch = "patch-0.31.1-svgs"}
 egui_extras = {git = "https://github.com/onsdagens/egui.git", branch = "patch-0.31.1-svgs", features=["svg", "svg_text","svg_images", "all_loaders"]}
 rfd = "0.17.2"
+typst-syntax = "0.14.2"
 
 [profile.release]
 lto = true
