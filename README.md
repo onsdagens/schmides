@@ -26,11 +26,11 @@ The selected directory must contain the slides and only the slides, named as sho
 
 The Typst source file for the slides can be provided containing the notes.
 
-The notes are expected on a `#speaker-note[<note>]` format. The slides towards which the notes apply can be moved around using the offset. Note, this moves all of the notes, currently having slides with no notes is not supported. To get around this, use empty `#speaker-note[]` blocks on each slide.
 The `./slides/example.typ` example contains some notes for the provided demo slides.
 
 
 ## Eventual goals
   - [x] Viewing `#speaker-note[...]` in the speaker note view
-  - [ ] Parsing speaker notes is currently a hack, maybe use `typst-lib`?
+  - [x] Parsing speaker notes is currently a hack, maybe use `typst-lib`?
   - [x] Making it less shaky at least on MacOS
+  - [ ] The code is a bit of a mess, could use some moving around
