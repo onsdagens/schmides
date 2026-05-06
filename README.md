@@ -34,3 +34,4 @@ The `./slides/example.typ` example contains some notes for the provided demo sli
   - [x] Parsing speaker notes is currently a hack, maybe use `typst-lib`?
   - [x] Making it less shaky at least on MacOS
   - [ ] The code is a bit of a mess, could use some moving around
+  - [ ] Add an editor (feature creep?)
