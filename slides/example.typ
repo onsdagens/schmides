@@ -23,8 +23,17 @@
   - The two column layout and inlined raster image make this one a bit more challenging
   - For sure no match for Typst
 #speaker-note[
-  If the speaker wishes to speak they may use these notes to keep track of their thinking
-]
+Example speaker notes.
+ 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce bibendum ante gravida, tempus neque at, euismod nibh. Etiam nec ultrices purus. Vestibulum vulputate consequat enim in sodales. Pellentesque non malesuada enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hac habitasse platea dictumst. Vestibulum dictum justo eget dolor cursus efficitur. Nulla sodales elit a condimentum convallis. Nam a magna non massa ultrices porta. In ac mauris ut est pulvinar pretium. Donec ac imperdiet massa. Cras in elit elementum, congue nibh ultrices, vestibulum purus. Mauris auctor, augue vel maximus vestibulum, sem odio semper enim, in bibendum lacus turpis sed magna. Proin consequat vestibulum elit, tincidunt gravida arcu posuere id. Sed tristique lorem ac nisl mattis, nec pulvinar elit eleifend. Fusce quam tellus, scelerisque eu accumsan nec, posuere ultricies urna.
+
+Donec elit ante, venenatis ac tempor et, hendrerit id tellus. Duis posuere commodo erat, non rutrum elit auctor ac. Cras congue mi ac quam aliquet, nec sagittis justo dapibus. In quis finibus dui. Cras eu imperdiet velit, ac fermentum est. Sed libero nunc, eleifend eget rutrum nec, bibendum et nunc. Maecenas et turpis convallis, varius sapien id, gravida massa. Nunc venenatis sit amet est aliquet consectetur. Nunc quis magna et tellus consectetur scelerisque. Duis fermentum enim non laoreet finibus. Nulla pulvinar luctus elit, sed accumsan nibh bibendum at. Nulla tellus quam, luctus tempus venenatis mollis, scelerisque in felis.
+
+Aliquam sodales magna eu diam dignissim commodo. Duis blandit metus eget nunc facilisis consequat. Ut sit amet ornare nisl. Fusce viverra auctor magna nec facilisis. Nullam viverra ac metus id porta. Etiam ligula nisi, porttitor sed interdum sollicitudin, viverra id risus. Etiam vel ipsum vel lectus semper euismod. Quisque sed condimentum lorem, et condimentum mauris. Mauris dictum, tortor non interdum bibendum, velit arcu rutrum arcu, quis mattis arcu enim sit amet eros. Nullam commodo pellentesque dictum. Nullam in dignissim sapien, sit amet facilisis diam. Mauris a mi luctus, feugiat nisi sed, euismod leo. Proin efficitur quam sed elit iaculis scelerisque ut sit amet augue.
+
+Donec eu metus faucibus enim auctor facilisis id lacinia diam. Proin ultricies velit sed dui feugiat lacinia. Proin vestibulum scelerisque sem, at laoreet tortor venenatis quis. Etiam rutrum, ligula sit amet facilisis mattis, ligula quam cursus est, in tincidunt elit dolor sit amet nisl. Quisque porta eros non cursus imperdiet. Vestibulum quis sem sit amet turpis efficitur rutrum in non enim. Praesent elementum, risus in dapibus congue, nisl arcu laoreet nisi, et auctor urna lectus ut ante. Nam sit amet sem vel dolor aliquam sodales sed at nulla. Donec sodales orci fringilla ligula faucibus, non pharetra ipsum faucibus. Sed ullamcorper malesuada velit, a rhoncus sem gravida in.
+
+Sed pretium venenatis convallis. Maecenas vel cursus est. Etiam id pulvinar justo, ac laoreet dolor. Mauris a massa et lacus imperdiet commodo sed sed mauris. Maecenas vulputate elit placerat tortor fringilla, id ultrices est pulvinar. Nunc et nisl vitae eros feugiat aliquet. Aliquam eleifend suscipit elit cursus venenatis. Maecenas urna nunc, consequat quis interdum nec, scelerisque eget mi. ]
 ][
 #image("img/deadlock.png")
 ]

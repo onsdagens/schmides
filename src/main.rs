@@ -70,7 +70,6 @@ impl eframe::App for SlideViewer {
         egui::CentralPanel::default().show(ctx, |ui| {
             if self.show_notes_ui {
                 ui.heading("Notes");
-                ui.label("This will in the future be the presenter notes view.");
                 ui.label("Press the left/right arrows to move around the slides");
                 if ui.button("Open directory").clicked() {
                     self.open_slides(ctx);
